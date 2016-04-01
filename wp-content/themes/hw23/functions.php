@@ -233,7 +233,7 @@ wp_enqueue_script( 'my_script', get_template_directory_uri() . '/js/form.js', ar
 wp_localize_script( 'my_script', 'ajax_object',
 	array(
 		'ajax_url' => admin_url( 'admin-ajax.php' ),
-		'nonce' => wp_create_nonce('ajax_object-nonce')
+		'nonce'    => wp_create_nonce( 'ajax_object-nonce' )
 	) );
 
 // Same handler function...
@@ -241,18 +241,23 @@ add_action( 'wp_ajax_my_action', 'my_action_callback' );
 add_action( 'wp_ajax_nopriv_my_action', 'my_action_callback' );
 function my_action_callback() {
 	$nonce = $_POST['nonce'];
-	$admin_mail = 'blackjoker993@gmail.com';
-	$message    = "\n" . 'Сообщение от  :' . $_POST['name'] .
-	              "\n" . 'E-mail отправителя: ' . $_POST['email'] .
-	              "\n" . 'Содержание сообщения:' . $_POST['message'];
-	if ( !wp_verify_nonce( $nonce, 'ajax_object-nonce' ) )
-		die('Stop');
-	if ( wp_mail( $admin_mail, 'Тема сообщения geekhub', $message ) ) {
-		echo 'Тестовое сообщение успешно отправлено, проверьте свой почтовый ящик.';
+
+	if ( ! wp_verify_nonce( $nonce, 'ajax_object-nonce' ) ) {
+		die( 'Stop' );
 	} else {
-		echo 'Не удалось отправить письмо :(';
-	};
-	echo $message;
-	wp_die();
-	exit;
+		$admin_mail = 'blackjoker993@gmail.com';
+		$message    = "\n" . 'Сообщение от  :' . $_POST['name'] .
+		              "\n" . 'E-mail отправителя: ' . $_POST['email'] .
+		              "\n" . 'Содержание сообщения:' . $_POST['message'];
+		if ( wp_mail( $admin_mail, 'Тема сообщения geekhub', $message ) ) {
+			echo 'Тестовое сообщение успешно отправлено, проверьте свой почтовый ящик.';
+		} else {
+			echo 'Не удалось отправить письмо :(';
+		};
+		echo $message;
+		wp_die();
+		exit;
+	}
+
+
 }
